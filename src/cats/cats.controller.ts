@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   Query,
+  UseFilters,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -19,6 +20,8 @@ import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
 import { Cat } from './entities/cat.entity';
+import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
+import { BaseExceptionFilter } from '@nestjs/core';
 
 @ApiTags('cats')
 @Controller('cats')
@@ -38,6 +41,7 @@ export class CatsController {
   @ApiResponse({ status: 200, description: '成功获取猫信息', type: Cat })
   @ApiResponse({ status: 404, description: '猫不存在' })
   @Get(':id')
+  // @UseFilters(HttpExceptionFilter)
   findOne(@Param('id') id: string): Cat {
     return this.catsService.findOne(id);
   }
