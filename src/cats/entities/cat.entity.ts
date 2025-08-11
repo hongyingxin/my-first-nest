@@ -5,7 +5,7 @@ export class Cat {
     description: '猫的唯一标识符',
     example: '1',
   })
-  id: string;
+  id: number;
 
   @ApiProperty({
     description: '猫的名字',
@@ -25,4 +25,4 @@ export class Cat {
     example: 'Persian',
   })
   breed: string;
-} 
+}

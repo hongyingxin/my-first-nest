@@ -7,21 +7,14 @@ import {
   Body,
   Param,
   Query,
-  UseFilters,
+  ParseIntPipe,
+  HttpStatus,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
 import { Cat } from './entities/cat.entity';
-import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
-import { BaseExceptionFilter } from '@nestjs/core';
 
 @ApiTags('cats')
 @Controller('cats')
@@ -41,8 +34,9 @@ export class CatsController {
   @ApiResponse({ status: 200, description: '成功获取猫信息', type: Cat })
   @ApiResponse({ status: 404, description: '猫不存在' })
   @Get(':id')
-  // @UseFilters(HttpExceptionFilter)
-  findOne(@Param('id') id: string): Cat {
+  findOne(
+    @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: number,
+  ): Cat {
     return this.catsService.findOne(id);
   }
 
@@ -58,7 +52,7 @@ export class CatsController {
   @ApiResponse({ status: 200, description: '成功更新猫信息' })
   @ApiResponse({ status: 404, description: '猫不存在' })
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
+  update(@Param('id') id: number, @Body() updateCatDto: UpdateCatDto) {
     return this.catsService.update(id, updateCatDto);
   }
 
@@ -67,7 +61,7 @@ export class CatsController {
   @ApiResponse({ status: 200, description: '成功删除猫' })
   @ApiResponse({ status: 404, description: '猫不存在' })
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.catsService.remove(id);
   }
-} 
+}

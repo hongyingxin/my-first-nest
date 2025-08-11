@@ -40,7 +40,7 @@ export class ResourceNotFoundException extends HttpException {
    * @param resource 资源名称（如：User、Cat、Order）
    * @param id 资源ID
    */
-  constructor(resource: string, id: string) {
+  constructor(resource: string, id: number) {
     super(
       {
         message: `${resource} with ID ${id} not found`,
