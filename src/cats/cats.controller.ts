@@ -1,22 +1,13 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Query,
-  ParseIntPipe,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UsePipes } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
 import { Cat } from './entities/cat.entity';
+import { ValidationPipe } from 'src/common/pipes/validation.pipe';
 
 @ApiTags('cats')
+@UsePipes(new ValidationPipe())
 @Controller('cats')
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
@@ -34,9 +25,7 @@ export class CatsController {
   @ApiResponse({ status: 200, description: '成功获取猫信息', type: Cat })
   @ApiResponse({ status: 404, description: '猫不存在' })
   @Get(':id')
-  findOne(
-    @Param('id', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: number,
-  ): Cat {
+  findOne(@Param('id') id: number): Cat {
     return this.catsService.findOne(id);
   }
 
