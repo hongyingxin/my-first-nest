@@ -3,7 +3,7 @@ import { CreateDogDto } from './dto/create-dog.dto';
 import { UpdateDogDto } from './dto/update-dog.dto';
 
 export interface Dog {
-  id: string;
+  id: number;
   name: string;
   age: number;
   breed: string;
@@ -13,19 +13,19 @@ export interface Dog {
 export class DogsService {
   private dogs: Dog[] = [
     {
-      id: '1',
+      id: 1,
       name: '小白',
       age: 5,
       breed: '金毛',
     },
     {
-      id: '2',
+      id: 2,
       name: '小黑',
       age: 3,
       breed: '拉布拉多',
     },
     {
-      id: '3',
+      id: 3,
       name: '小黄',
       age: 2,
       breed: '柴犬',
@@ -34,7 +34,7 @@ export class DogsService {
 
   create(createDogDto: CreateDogDto): Dog {
     const newDog: Dog = {
-      id: (this.dogs.length + 1).toString(),
+      id: this.dogs.length + 1,
       ...createDogDto,
     } as Dog;
     this.dogs.push(newDog);
@@ -48,7 +48,7 @@ export class DogsService {
     return this.dogs;
   }
 
-  findOne(id: string): Dog {
+  findOne(id: number): Dog {
     const dog = this.dogs.find((dog) => dog.id === id);
     if (!dog) {
       throw new NotFoundException(`Cat with ID ${id} not found`);
@@ -56,7 +56,7 @@ export class DogsService {
     return dog;
   }
 
-  update(id: string, updateDogDto: UpdateDogDto): Dog {
+  update(id: number, updateDogDto: UpdateDogDto): Dog {
     const dogIndex = this.dogs.findIndex((dog) => dog.id === id);
     if (dogIndex === -1) {
       throw new NotFoundException(`Dog with ID ${id} not found`);
@@ -68,7 +68,7 @@ export class DogsService {
     return this.dogs[dogIndex];
   }
 
-  remove(id: string): { message: string } {
+  remove(id: number): { message: string } {
     const dogIndex = this.dogs.findIndex((dog) => dog.id === id);
     if (dogIndex === -1) {
       throw new NotFoundException(`Dog with ID ${id} not found`);
