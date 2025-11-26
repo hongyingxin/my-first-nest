@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
-import { Cat } from './entities/cat.entity';
+import { CatResponseDto } from './dto/response-cat.dto';
 import { ValidationPipe } from 'src/common/pipes/validation.pipe';
 
 @ApiTags('cats')
@@ -14,25 +14,25 @@ export class CatsController {
 
   @ApiOperation({ summary: '获取所有猫' })
   @ApiQuery({ name: 'breed', required: false, description: '按品种筛选' })
-  @ApiResponse({ status: 200, description: '成功获取猫列表', type: [Cat] })
+  @ApiResponse({ status: 200, description: '成功获取猫列表', type: [CatResponseDto] })
   @Get()
-  findAll(@Query('breed') breed?: string): Cat[] {
+  async findAll(@Query('breed') breed?: string): Promise<CatResponseDto[]> {
     return this.catsService.findAll(breed);
   }
 
   @ApiOperation({ summary: '根据ID获取猫' })
   @ApiParam({ name: 'id', description: '猫的ID' })
-  @ApiResponse({ status: 200, description: '成功获取猫信息', type: Cat })
+  @ApiResponse({ status: 200, description: '成功获取猫信息', type: CatResponseDto })
   @ApiResponse({ status: 404, description: '猫不存在' })
   @Get(':id')
-  findOne(@Param('id') id: number): Cat {
+  async findOne(@Param('id') id: number): Promise<CatResponseDto> {
     return this.catsService.findOne(id);
   }
 
   @ApiOperation({ summary: '创建新猫' })
-  @ApiResponse({ status: 201, description: '成功创建猫', type: Cat })
+  @ApiResponse({ status: 201, description: '成功创建猫', type: CatResponseDto })
   @Post()
-  create(@Body() createCatDto: CreateCatDto): Cat {
+  async create(@Body() createCatDto: CreateCatDto): Promise<CatResponseDto> {
     return this.catsService.create(createCatDto);
   }
 
@@ -41,7 +41,10 @@ export class CatsController {
   @ApiResponse({ status: 200, description: '成功更新猫信息' })
   @ApiResponse({ status: 404, description: '猫不存在' })
   @Put(':id')
-  update(@Param('id') id: number, @Body() updateCatDto: UpdateCatDto) {
+  async update(
+    @Param('id') id: number,
+    @Body() updateCatDto: UpdateCatDto,
+  ): Promise<CatResponseDto> {
     return this.catsService.update(id, updateCatDto);
   }
 
@@ -50,7 +53,7 @@ export class CatsController {
   @ApiResponse({ status: 200, description: '成功删除猫' })
   @ApiResponse({ status: 404, description: '猫不存在' })
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  async remove(@Param('id') id: number): Promise<{ message: string }> {
     return this.catsService.remove(id);
   }
 }

@@ -1,0 +1,27 @@
+import { ApiProperty } from '@nestjs/swagger';
+
+export class CatResponseDto {
+  @ApiProperty({
+    description: '猫的唯一标识符',
+    example: 1,
+  })
+  id: number;
+
+  @ApiProperty({
+    description: '猫的名字',
+    example: 'Whiskers',
+  })
+  name: string;
+
+  @ApiProperty({
+    description: '猫的年龄',
+    example: 3,
+  })
+  age: number;
+
+  @ApiProperty({
+    description: '猫的品种',
+    example: 'Persian',
+  })
+  breed: string;
+}
