@@ -1,79 +1,47 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateDogDto } from './dto/create-dog.dto';
 import { UpdateDogDto } from './dto/update-dog.dto';
-
-export interface Dog {
-  id: number;
-  name: string;
-  age: number;
-  breed: string;
-}
+import { Repository } from 'typeorm';
+import { Dog } from './entities/dog.entity';
 
 @Injectable()
 export class DogsService {
-  private dogs: Dog[] = [
-    {
-      id: 1,
-      name: '小白',
-      age: 5,
-      breed: '金毛',
-    },
-    {
-      id: 2,
-      name: '小黑',
-      age: 3,
-      breed: '拉布拉多',
-    },
-    {
-      id: 3,
-      name: '小黄',
-      age: 2,
-      breed: '柴犬',
-    },
-  ];
+  constructor(
+    @InjectRepository(Dog)
+    private readonly dogRepository: Repository<Dog>,
+  ) {}
 
-  create(createDogDto: CreateDogDto): Dog {
-    const newDog: Dog = {
-      id: this.dogs.length + 1,
-      ...createDogDto,
-    } as Dog;
-    this.dogs.push(newDog);
-    return newDog;
+  create(createDogDto: CreateDogDto): Promise<Dog> {
+    const newDog = this.dogRepository.create(createDogDto);
+    return this.dogRepository.save(newDog);
   }
 
-  findAll(breed?: string): Dog[] {
-    if (breed) {
-      return this.dogs.filter((dog) => dog.breed === breed);
+  async findAll(breed?: string): Promise<Dog[]> {
+    const dogs = await this.dogRepository.find({ where: { breed } });
+    if (!dogs) {
+      throw new NotFoundException('Dogs not found');
     }
-    return this.dogs;
+    return dogs;
   }
 
-  findOne(id: number): Dog {
-    const dog = this.dogs.find((dog) => dog.id === id);
+  async findOne(id: number): Promise<Dog> {
+    const dog = await this.dogRepository.findOne({ where: { id } });
     if (!dog) {
-      throw new NotFoundException(`Cat with ID ${id} not found`);
+      throw new NotFoundException(`Dog with ID ${id} not found`);
     }
     return dog;
   }
 
-  update(id: number, updateDogDto: UpdateDogDto): Dog {
-    const dogIndex = this.dogs.findIndex((dog) => dog.id === id);
-    if (dogIndex === -1) {
-      throw new NotFoundException(`Dog with ID ${id} not found`);
-    }
-    this.dogs[dogIndex] = {
-      ...this.dogs[dogIndex],
-      ...updateDogDto,
-    };
-    return this.dogs[dogIndex];
+  async update(id: number, updateDogDto: UpdateDogDto): Promise<Dog> {
+    const dog = await this.findOne(id);
+    Object.assign(dog, updateDogDto);
+    return this.dogRepository.save(dog);
   }
 
-  remove(id: number): { message: string } {
-    const dogIndex = this.dogs.findIndex((dog) => dog.id === id);
-    if (dogIndex === -1) {
-      throw new NotFoundException(`Dog with ID ${id} not found`);
-    }
-    this.dogs.splice(dogIndex, 1);
+  async remove(id: number): Promise<{ message: string }> {
+    const dog = await this.findOne(id);
+    await this.dogRepository.remove(dog);
     return { message: `Dog with ID ${id} has been removed` };
   }
 }

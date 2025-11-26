@@ -72,7 +72,9 @@ export class CatsService {
    * 2. save() - 保存到数据库：INSERT INTO cats (...) VALUES (...)
    */
   async create(createCatDto: CreateCatDto): Promise<Cat> {
+    console.log('createCatDto', createCatDto);
     const newCat = this.catRepository.create(createCatDto);
+    console.log('newCat', newCat);
     return this.catRepository.save(newCat);
   }
 
